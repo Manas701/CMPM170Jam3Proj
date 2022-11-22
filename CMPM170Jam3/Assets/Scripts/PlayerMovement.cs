@@ -35,18 +35,33 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private BoxCollider2D hitbox;
     [SerializeField] private Rigidbody2D rb;
 
-    private float lastDrag;
+    [Header("Input")]
+    public InputAction playerLeftRight;
+    public InputAction playerJump;
+
+    //Below two functions required for input system to work properly
+    private void OnEnable()
+    {
+        playerLeftRight.Enable();
+        playerJump.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerLeftRight.Disable();
+        playerJump.Disable();
+    }
 
     private void Update()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
+        horizontalInput = playerLeftRight.ReadValue<float>();
 
         //Updates drag and fall speed
         AdjustDrag();
         AdjustFallSpeed();
 
         //jump buffer (stores jump for short amount of time so that player can press jump right before they hit the ground and still jump)
-        if (Input.GetKeyDown(KeyCode.W))
+        if (playerJump.WasPressedThisFrame())
         {
             jumpBufferTimer = jumpBuffer;
         }
@@ -156,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
             rb.gravityScale = fallMultiplier;
         }
         //allows play to do short jumps by increasing gravity when they let go of jump
-        else if (rb.velocity.y > 0 && !Input.GetKey(KeyCode.W))
+        else if (rb.velocity.y > 0 && playerJump.ReadValue<float>() == 0)
         {
             rb.gravityScale = lowJumpMultiplier;
         }
