@@ -8,7 +8,6 @@ public class FollowPlayers : MonoBehaviour
     private Transform p2;
     private float camX;
     private float camY;
-    private Vector3 camPos;
 
     // Start is called before the first frame update
     void Start()
