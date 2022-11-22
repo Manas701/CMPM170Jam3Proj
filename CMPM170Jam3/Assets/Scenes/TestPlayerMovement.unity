@@ -689,10 +689,10 @@ MonoBehaviour:
   - {fileID: 205541807}
   - {fileID: 2003646025}
   offset: {x: 0, y: 0, z: -10}
-  smoothTime: 0.5
+  smoothTime: 0.25
   minZoom: 40
-  maxZoom: 10
-  zoomLimiter: 50
+  maxZoom: 5
+  zoomLimiter: 250
 --- !u!114 &797053560
 MonoBehaviour:
   m_ObjectHideFlags: 0

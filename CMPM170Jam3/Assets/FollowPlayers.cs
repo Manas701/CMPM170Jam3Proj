@@ -8,12 +8,14 @@ public class FollowPlayers : MonoBehaviour
     
     public List<Transform> players;
 
+    [Header("Position")]
     public Vector3 offset;
     public float smoothTime;
 
-    public float minZoom = 40f;
-    public float maxZoom = 10f;
-    public float zoomLimiter = 50f;
+    [Header("Zoom")]
+    public float minZoom;
+    public float maxZoom;
+    public float zoomLimiter;
 
     private Vector3 velocity;
     private Camera cam;
@@ -44,7 +46,7 @@ public class FollowPlayers : MonoBehaviour
     void Zoom()
     {
         float newZoom = Mathf.Lerp(maxZoom, minZoom, GetGreatestDistance() / zoomLimiter);
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 
     float GetGreatestDistance()
