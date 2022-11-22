@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        //reads left/right input
         horizontalInput = playerLeftRight.ReadValue<float>();
 
         //Updates drag and fall speed
