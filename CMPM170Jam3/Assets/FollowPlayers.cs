@@ -11,6 +11,8 @@ public class FollowPlayers : MonoBehaviour
     [Header("Position")]
     public Vector3 offset;
     public float smoothTime;
+    private Vector3 centerPoint;
+    private Vector3 newPos;
 
     [Header("Zoom")]
     public float minZoom;
@@ -36,9 +38,9 @@ public class FollowPlayers : MonoBehaviour
 
     void Move()
     {
-        Vector3 centerPoint = GetCenterPoint();
+        centerPoint = GetCenterPoint();
 
-        Vector3 newPos = centerPoint + offset;
+        newPos = centerPoint + offset;
 
         transform.position = Vector3.SmoothDamp(transform.position, newPos, ref velocity, smoothTime);
     }
