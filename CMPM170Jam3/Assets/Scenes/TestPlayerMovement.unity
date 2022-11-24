@@ -357,6 +357,7 @@ GameObject:
   - component: {fileID: 205541806}
   - component: {fileID: 205541805}
   - component: {fileID: 205541804}
+  - component: {fileID: 205541808}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Untagged
@@ -423,6 +424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f583065b2cd844bb516cb5cd6a1327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -432,11 +434,19 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
+  grabbingPlayerJumpMultiplier: 2
+  horizontalThrowMultiplier: 0.5
+  verticalThrowMultiplier: 0.5
+  grabCD: 1
+  controlsBackCD: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   hitbox: {fileID: 205541804}
+  grabHitbox: {fileID: 205541808}
   rb: {fileID: 205541805}
+  otherPlayer: {fileID: 2003646021}
+  otherPlayerScript: {fileID: 2003646024}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -487,6 +497,23 @@ MonoBehaviour:
       m_Action: Player Jump
       m_Flags: 0
     m_Flags: 0
+  playerGrab:
+    m_Name: Player Grab
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7a1e8429-9210-4d03-aba8-d2a8596cee55
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 9f81123e-b1ba-4867-a3bb-887aa88e477a
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Player Grab
+      m_Flags: 0
+    m_Flags: 0
 --- !u!4 &205541807
 Transform:
   m_ObjectHideFlags: 0
@@ -503,6 +530,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &205541808
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205541803}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &458333456
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,6 +651,7 @@ GameObject:
   - component: {fileID: 797053558}
   - component: {fileID: 797053557}
   - component: {fileID: 797053556}
+  - component: {fileID: 797053559}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -671,6 +725,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &797053559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797053555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1194462795
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,6 +887,7 @@ GameObject:
   - component: {fileID: 2003646024}
   - component: {fileID: 2003646023}
   - component: {fileID: 2003646022}
+  - component: {fileID: 2003646026}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Untagged
@@ -866,6 +954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f583065b2cd844bb516cb5cd6a1327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -875,11 +964,19 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
+  grabbingPlayerJumpMultiplier: 2
+  horizontalThrowMultiplier: 0.5
+  verticalThrowMultiplier: 0.5
+  grabCD: 1
+  controlsBackCD: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   hitbox: {fileID: 2003646022}
+  grabHitbox: {fileID: 2003646026}
   rb: {fileID: 2003646023}
+  otherPlayer: {fileID: 205541803}
+  otherPlayerScript: {fileID: 205541806}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -930,6 +1027,23 @@ MonoBehaviour:
       m_Action: Player Jump
       m_Flags: 0
     m_Flags: 0
+  playerGrab:
+    m_Name: Player Grab
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c0df4900-b9da-4b6f-9927-3bcf0906c016
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 45752125-3bde-4684-af1c-d1a2e535fe33
+      m_Path: <Keyboard>/downArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Player Grab
+      m_Flags: 0
+    m_Flags: 0
 --- !u!4 &2003646025
 Transform:
   m_ObjectHideFlags: 0
@@ -946,3 +1060,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2003646026
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003646021}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 1}
+  m_EdgeRadius: 0
