@@ -12,7 +12,8 @@ public class PlayerMovement : MonoBehaviour
         JUMPING,
         HOLDING,
         BEINGHELD,
-        BEINGTHROWN
+        BEINGTHROWN,
+        STUCK
     }
     public State state;
 
@@ -21,6 +22,10 @@ public class PlayerMovement : MonoBehaviour
     private const float left = -1f;
     private const float right = 1f;
     private float facing = right;
+
+    [Header("Sticking Variables")]
+    [SerializeField] private float horizontalWallThrow;
+    [SerializeField] private float verticalWallThrow;
 
     [Header("Movement Variables")]
     [SerializeField] private float maxSpeed;
@@ -53,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Components, Objects, and Layers")]
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask onlyGroundLayer;
     [SerializeField] private BoxCollider2D hitbox;
     [SerializeField] private BoxCollider2D grabHitbox;
     [SerializeField] private Rigidbody2D rb;
@@ -226,7 +232,7 @@ public class PlayerMovement : MonoBehaviour
                     jumpBufferTimer = 0;
                     Jump();
                 }
-                // checks if grab button was repressed after initiall grabbing then throws other player
+                // checks if grab button was repressed after initial grabbing then throws other player
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
                     state = State.IDLE; // could have used a THROWING state but would pretty much accomplish the same thing as IDLE
@@ -244,9 +250,30 @@ public class PlayerMovement : MonoBehaviour
             case State.BEINGHELD:
                 break;
             case State.BEINGTHROWN:
-                if(controlsBackCDTimer <= 0 || OnGround())
+                // if they hit a wall, stick the player
+                if (OnWallLeft() || OnWallRight())
+                {
+                    rb.velocity = Vector2.zero;
+                    rb.gravityScale = 0f;
+                    state = State.STUCK;
+                }
+                // if they hit the ground, return player to idle state
+                else if(controlsBackCDTimer <= 0 || OnlyOnGround())
                 {
                     state = State.IDLE;
+                }
+                break;
+            case State.STUCK:
+                // stick player until they press down
+                rb.isKinematic = true;
+
+                // once player presses down, slingshot them upwards
+                if (grabInput != 0)
+                {
+                    rb.isKinematic = false;
+                    rb.gravityScale = 1f;
+                    rb.AddForce(new Vector2(horizontalWallThrow * (facing * -1), verticalWallThrow) * acceleration, ForceMode2D.Impulse);
+                    state = State.JUMPING;
                 }
                 break;
         }
@@ -335,16 +362,60 @@ public class PlayerMovement : MonoBehaviour
         return raycastHitGround.collider != null;
     }
 
+    private bool OnlyOnGround()
+    {
+        //checks if there are any groundLayer colliders below the player
+        RaycastHit2D raycastHitGround = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.down, 0.05f, onlyGroundLayer);
+        return raycastHitGround.collider != null;
+    }
+
     // trigger enter and exit functions used for detecting
     // if the other player is inside the grab hitbox
-    private void OnTriggerEnter2D(Collider2D col){
+    private void OnTriggerEnter2D(Collider2D col)
+    {
         if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0)
         {
             canGrab = true;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D col){
+    private void OnTriggerExit2D(Collider2D col)
+    {
         canGrab = false;
     }
+
+    // checks if player hit wall on the right
+    private bool OnWallRight()
+    {
+        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.right, 0.1f, groundLayer);
+        return raycastHitWall.collider != null;
+    }
+
+    // checks if player hit wall on the left
+    private bool OnWallLeft()
+    {
+        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.left, 0.1f, groundLayer);
+        return raycastHitWall.collider != null;
+    }
+
+/*
+    // check when thrown player hits a wall
+    private void OnCollisionEnter2d(Collider2D col)
+    {
+        if(state == State.BEINGTHROWN)
+        {
+            // check if this is the first thing they hit
+            if(wallHit)
+            {
+                return;
+            }
+            else
+            {
+                wallHit = true;
+            }
+            // stick the player
+            rb.isKinematic = true;
+        }
+    }
+*/
 }
