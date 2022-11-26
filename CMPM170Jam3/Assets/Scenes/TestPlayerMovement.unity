@@ -1020,6 +1020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f583065b2cd844bb516cb5cd6a1327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -1029,11 +1030,19 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
+  grabbingPlayerJumpMultiplier: 2
+  horizontalThrowMultiplier: 0.5
+  verticalThrowMultiplier: 0.5
+  grabCD: 1
+  controlsBackCD: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 320
   hitbox: {fileID: 205541804}
+  grabHitbox: {fileID: 205541808}
   rb: {fileID: 205541805}
+  otherPlayer: {fileID: 2003646021}
+  otherPlayerScript: {fileID: 2003646024}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -1082,6 +1091,23 @@ MonoBehaviour:
       m_Processors: 
       m_Groups: 
       m_Action: Player Jump
+      m_Flags: 0
+    m_Flags: 0
+  playerGrab:
+    m_Name: Player Grab
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7a1e8429-9210-4d03-aba8-d2a8596cee55
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 9f81123e-b1ba-4867-a3bb-887aa88e477a
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Player Grab
       m_Flags: 0
     m_Flags: 0
 --- !u!4 &205541807
@@ -7372,6 +7398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94f583065b2cd844bb516cb5cd6a1327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -7381,11 +7408,19 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
+  grabbingPlayerJumpMultiplier: 2
+  horizontalThrowMultiplier: 0.5
+  verticalThrowMultiplier: 0.5
+  grabCD: 1
+  controlsBackCD: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 192
   hitbox: {fileID: 2003646022}
+  grabHitbox: {fileID: 2003646026}
   rb: {fileID: 2003646023}
+  otherPlayer: {fileID: 205541803}
+  otherPlayerScript: {fileID: 205541806}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -7434,6 +7469,23 @@ MonoBehaviour:
       m_Processors: 
       m_Groups: 
       m_Action: Player Jump
+      m_Flags: 0
+    m_Flags: 0
+  playerGrab:
+    m_Name: Player Grab
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c0df4900-b9da-4b6f-9927-3bcf0906c016
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 45752125-3bde-4684-af1c-d1a2e535fe33
+      m_Path: <Keyboard>/downArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Player Grab
       m_Flags: 0
     m_Flags: 0
 --- !u!4 &2003646025

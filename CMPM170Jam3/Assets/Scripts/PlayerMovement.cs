@@ -5,13 +5,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    enum State
+    public enum State
     {
         IDLE,
         RUNNING,
         JUMPING,
+        HOLDING,
+        BEINGHELD,
+        BEINGTHROWN
     }
-    private State state;
+    public State state;
+
+    // constants used for setting the facing of the player
+    // impacts the horizontal throw direction of the grabbed player
+    private const float left = -1f;
+    private const float right = 1f;
+    private float facing = right;
 
     [Header("Movement Variables")]
     [SerializeField] private float maxSpeed;
@@ -30,32 +39,63 @@ public class PlayerMovement : MonoBehaviour
     private float jumpBufferTimer;
     private float onGroundTimer;
 
+    [Header("Grabbing and Throwing Variables")]
+    [SerializeField] private float grabbingPlayerJumpMultiplier;
+    [SerializeField] private float horizontalThrowMultiplier;
+    [SerializeField] private float verticalThrowMultiplier;
+    [SerializeField] private float grabCD;
+    [SerializeField] private float controlsBackCD;
+    private float grabCDTimer = 0;
+    private float controlsBackCDTimer = 0;
+    private float prevGrabButtonState = 0;
+    private bool canGrab = false;
+    private float grabInput;
+
     [Header("Components, Objects, and Layers")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D hitbox;
+    [SerializeField] private BoxCollider2D grabHitbox;
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private GameObject otherPlayer;
+    [SerializeField] private PlayerMovement otherPlayerScript;
 
     [Header("Input")]
     public InputAction playerLeftRight;
     public InputAction playerJump;
+    public InputAction playerGrab;
 
     //Below two functions required for input system to work properly
     private void OnEnable()
     {
         playerLeftRight.Enable();
         playerJump.Enable();
+        playerGrab.Enable();
     }
 
     private void OnDisable()
     {
         playerLeftRight.Disable();
         playerJump.Disable();
+        playerGrab.Disable();
     }
 
     private void Update()
     {
         //reads left/right input
         horizontalInput = playerLeftRight.ReadValue<float>();
+
+        // these conditionals update player facing and accounts for
+        // the BEINGHELD state, so if grabbed player is spamming directions
+        // their facing won't be updated as it relies on the grabbing player's facing
+        if(horizontalInput == 1 && !(state == State.BEINGHELD)){
+            facing = right;
+        }
+        else if(horizontalInput == -1 && !(state == State.BEINGHELD)){
+            facing = left;
+        }
+
+        // grab input
+        grabInput = playerGrab.ReadValue<float>();
 
         //Updates drag and fall speed
         AdjustDrag();
@@ -87,6 +127,16 @@ public class PlayerMovement : MonoBehaviour
                 onGroundTimer -= Time.deltaTime;
             }
         }
+
+        // timers for resetting grab and giving controls back cooldowns
+        if(grabCDTimer > 0){
+            grabCDTimer -= Time.deltaTime;
+        }
+
+        if(controlsBackCDTimer > 0)
+        {
+            controlsBackCDTimer -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -109,6 +159,20 @@ public class PlayerMovement : MonoBehaviour
                     MovePlayer();
                     state = State.RUNNING;
                 }
+                // grabbing
+                else if(grabInput != 0 && canGrab)
+                {
+                    state = State.HOLDING;
+                    otherPlayerScript.state = State.BEINGHELD;
+                    // set other player's gravity to zero so that their 
+                    // position can be updated without gravity affecting it
+                    otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 0f;
+                    // since the grabbed player is floating above the grabbing player
+                    // increase the jump power, otherwise the grabbing player has a really small
+                    // jump while holding the other player
+                    // (can be modified by setting the GrabbingPlayerJumpMultiplier in the editor)
+                    jumpPower *= grabbingPlayerJumpMultiplier;
+                }
                 break;
 
             case State.RUNNING:
@@ -124,6 +188,13 @@ public class PlayerMovement : MonoBehaviour
                 else if (horizontalInput == 0)
                 {
                     state = State.IDLE;
+                }
+                else if(grabInput != 0 && canGrab)
+                {
+                    state = State.HOLDING;
+                    otherPlayerScript.state = State.BEINGHELD;
+                    otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 0f;
+                    jumpPower *= grabbingPlayerJumpMultiplier;
                 }
                 break;
 
@@ -143,6 +214,48 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
                 break;
+            case State.HOLDING:
+                MovePlayer();
+                // set the player who is being grabbed to just float above the grabbing player's head
+                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + 1.03f);
+                // also update the other player's facing direction to match the grabbing player's facing direction
+                // so if grabbing player faces right the grabbed player also faces right
+                otherPlayerScript.facing = facing;
+                if (jumpBufferTimer > 0 && onGroundTimer > 0)
+                {
+                    jumpBufferTimer = 0;
+                    Jump();
+                }
+                // checks if grab button was repressed after initiall grabbing then throws other player
+                else if(grabInput != 0 && prevGrabButtonState != grabInput)
+                {
+                    state = State.IDLE; // could have used a THROWING state but would pretty much accomplish the same thing as IDLE
+                    grabCDTimer = grabCD;
+                    otherPlayerScript.state = State.BEINGTHROWN;
+                    otherPlayerScript.controlsBackCDTimer = controlsBackCD;
+                    canGrab = false;
+                    otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
+                    // apply a quick horizontal and vertical force depending on the facing
+                    // of the grabbing player and some multipliers (can also be edited in the editor)
+                    otherPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalThrowMultiplier * facing, verticalThrowMultiplier) * acceleration, ForceMode2D.Impulse);
+                    jumpPower /= grabbingPlayerJumpMultiplier;
+                }
+                break;
+            case State.BEINGHELD:
+                break;
+            case State.BEINGTHROWN:
+                if(controlsBackCDTimer <= 0 || OnGround())
+                {
+                    state = State.IDLE;
+                }
+                break;
+        }
+        // check if the state of the grab button on the last update, this ensures that 
+        // if the player picks another player up and holds the grab button they aren't
+        // immediately thrown, this way grab button has the be repressed in order to throw
+        if(prevGrabButtonState != grabInput)
+        {
+            prevGrabButtonState = grabInput;
         }
     }
 
@@ -220,5 +333,18 @@ public class PlayerMovement : MonoBehaviour
         //checks if there are any groundLayer colliders below the player
         RaycastHit2D raycastHitGround = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.down, 0.05f, groundLayer);
         return raycastHitGround.collider != null;
+    }
+
+    // trigger enter and exit functions used for detecting
+    // if the other player is inside the grab hitbox
+    private void OnTriggerEnter2D(Collider2D col){
+        if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0)
+        {
+            canGrab = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D col){
+        canGrab = false;
     }
 }
