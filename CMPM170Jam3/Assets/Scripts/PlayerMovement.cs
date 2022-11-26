@@ -387,14 +387,14 @@ public class PlayerMovement : MonoBehaviour
     // checks if player hit wall on the right
     private bool OnWallRight()
     {
-        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.right, 0.1f, groundLayer);
+        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.right, 0.08f, groundLayer);
         return raycastHitWall.collider != null;
     }
 
     // checks if player hit wall on the left
     private bool OnWallLeft()
     {
-        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.left, 0.1f, groundLayer);
+        RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.left, 0.08f, groundLayer);
         return raycastHitWall.collider != null;
     }
 
