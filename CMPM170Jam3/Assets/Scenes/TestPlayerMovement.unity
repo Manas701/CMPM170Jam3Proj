@@ -1022,6 +1022,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  horizontalWallThrow: 0
+  verticalWallThrow: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -1039,6 +1041,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 320
+  onlyGroundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   hitbox: {fileID: 205541804}
   grabHitbox: {fileID: 205541808}
   rb: {fileID: 205541805}
@@ -3219,7 +3224,7 @@ MonoBehaviour:
   smoothTime: 0.25
   minZoom: 40
   maxZoom: 5
-  zoomLimiter: 250
+  zoomLimiter: 90
 --- !u!114 &797053560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7427,6 +7432,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  horizontalWallThrow: 0
+  verticalWallThrow: 0
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -7444,6 +7451,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 192
+  onlyGroundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   hitbox: {fileID: 2003646022}
   grabHitbox: {fileID: 2003646026}
   rb: {fileID: 2003646023}
