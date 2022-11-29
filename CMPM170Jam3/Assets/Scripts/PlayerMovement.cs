@@ -360,11 +360,20 @@ public class PlayerMovement : MonoBehaviour
 
     private bool OnGround()
     {
-        //checks if there are any groundLayer colliders below the player
-        RaycastHit2D raycastHitGround = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.down, 0.05f, groundLayer);
-        if (raycastHitGround.collider != null && raycastHitGround.collider.isTrigger == false)
+        //setting up arguments for the boxcast
+        List<RaycastHit2D> yam2 = new List<RaycastHit2D>();
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(groundLayer);
+
+        //collects all of the groundLayer colliders below the player
+        int numColliders = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0f, Vector2.down, filter, yam2, 0.05f);
+        //returns true if one of the colliders isnt a trigger (stops OnGround returning true on the players grab hitbox)
+        for (int i = 0; i < numColliders; i++)
         {
-            return true;
+            if (yam2[i].collider.isTrigger == false)
+            {
+                return true;
+            }
         }
         return false;
     }
