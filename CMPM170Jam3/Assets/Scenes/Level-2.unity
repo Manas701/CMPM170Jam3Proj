@@ -588,7 +588,7 @@ GameObject:
   - component: {fileID: 74059387}
   m_Layer: 6
   m_Name: MovingPlatform4
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1156,7 +1156,7 @@ GameObject:
   - component: {fileID: 202094236}
   m_Layer: 6
   m_Name: MovingPlatform3
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3271,7 +3271,7 @@ GameObject:
   - component: {fileID: 674319320}
   m_Layer: 6
   m_Name: MovingPlatform1
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4466,7 +4466,7 @@ GameObject:
   - component: {fileID: 950971883}
   m_Layer: 6
   m_Name: MovingPlatform2
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
