@@ -265,12 +265,14 @@ public class PlayerMovement : MonoBehaviour
                 break;
             case State.STUCK:
                 // stick player until they press down
-                rb.isKinematic = true;
+                //rb.isKinematic = true;
+                rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
 
                 // once player presses down, slingshot them upwards
                 if (grabInput != 0)
                 {
-                    rb.isKinematic = false;
+                    //rb.isKinematic = false;
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                     rb.gravityScale = 1f;
                     rb.AddForce(new Vector2(horizontalWallThrow * (facing * -1), verticalWallThrow) * acceleration, ForceMode2D.Impulse);
                     state = State.JUMPING;

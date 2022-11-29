@@ -16,12 +16,12 @@ public class PlatformStick : MonoBehaviour
         
     }
 
-    void OnCollisionEnter(Collision other)
+    void OnCollisionEnter2D(Collision2D other)
     {
         other.transform.parent = transform;
     }
 
-    void OnCollisionExit(Collision other)
+    void OnCollisionExit2D(Collision2D other)
     {
         other.transform.parent = null;
     }
