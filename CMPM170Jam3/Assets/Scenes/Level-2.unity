@@ -3945,14 +3945,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df39795ed374b4b0391b0e5e8d62778e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players:
+  targets:
   - {fileID: 205541807}
   - {fileID: 2003646025}
   offset: {x: 0, y: 0, z: -10}
   smoothTime: 0.25
   minZoom: 40
   maxZoom: 5
-  zoomLimiter: 250
+  zoomLimiter: 100
 --- !u!114 &797053560
 MonoBehaviour:
   m_ObjectHideFlags: 0
