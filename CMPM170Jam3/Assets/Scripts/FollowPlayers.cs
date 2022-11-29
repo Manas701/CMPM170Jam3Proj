@@ -74,7 +74,7 @@ public class FollowPlayers : MonoBehaviour
         }
 
         // the width of this box is the greatest distance
-        return bounds.size.y;
+        return bounds.size.x + bounds.size.y;
     }
 
     // 

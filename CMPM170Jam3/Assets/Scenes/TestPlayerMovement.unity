@@ -3224,7 +3224,7 @@ MonoBehaviour:
   smoothTime: 0.25
   minZoom: 40
   maxZoom: 5
-  zoomLimiter: 90
+  zoomLimiter: 120
 --- !u!114 &797053560
 MonoBehaviour:
   m_ObjectHideFlags: 0
