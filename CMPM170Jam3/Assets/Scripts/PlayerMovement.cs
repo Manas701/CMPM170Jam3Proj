@@ -391,7 +391,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(col.gameObject.tag == "Player")
         {
-            if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0)
+            if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0 && otherPlayerScript.state != State.STUCK)
             {
                 canGrab = true;
             }
