@@ -79,12 +79,20 @@ public class MovingPlatform : MonoBehaviour
     void OnTriggerStay2D (Collider2D other){
         if (other.CompareTag("Player")){
             moveTowardsEnd = true;
+            if (!GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Contains(platformObject.transform))
+            {
+                GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Add(platformObject.transform);
+            }
         }
      }
  
     void OnTriggerExit2D (Collider2D other){
         if (other.CompareTag("Player")){
             moveTowardsEnd = false;
+            if (GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Contains(platformObject.transform))
+            {
+                GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Remove(platformObject.transform);
+            }
         }
      }
 }

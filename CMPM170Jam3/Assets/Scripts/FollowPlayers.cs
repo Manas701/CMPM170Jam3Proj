@@ -6,7 +6,7 @@ using UnityEngine;
 public class FollowPlayers : MonoBehaviour
 {
     
-    public List<Transform> players;
+    public List<Transform> targets;
 
     [Header("Position")]
     // how far the camera is from the centerpoint
@@ -15,7 +15,7 @@ public class FollowPlayers : MonoBehaviour
     // time taken to move the camera to the new position
     public float smoothTime;
 
-    // center point between both players
+    // center point between both targets
     private Vector3 centerPoint;
 
     private Vector3 newPos;
@@ -38,8 +38,8 @@ public class FollowPlayers : MonoBehaviour
     // want to move the camera after everything else
     void LateUpdate()
     {
-        // error handling for no players on screen
-        if (players.Count == 0)
+        // error handling for no targets on screen
+        if (targets.Count == 0)
             return;
 
         Move();
@@ -63,14 +63,14 @@ public class FollowPlayers : MonoBehaviour
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 
-    // gets the distance between the two farthest players (lol theres only two tho)
+    // gets the distance between the two farthest targets (lol theres only two tho)
     float GetGreatestDistance()
     {
-        // gets the box encapsulating all players
-        var bounds = new Bounds(players[0].position, Vector3.zero);
-        for (int i = 0; i < players.Count; i++)
+        // gets the box encapsulating all targets
+        var bounds = new Bounds(targets[0].position, Vector3.zero);
+        for (int i = 0; i < targets.Count; i++)
         {
-            bounds.Encapsulate(players[i].position);
+            bounds.Encapsulate(targets[i].position);
         }
 
         // the width of this box is the greatest distance
@@ -81,16 +81,16 @@ public class FollowPlayers : MonoBehaviour
     Vector3 GetCenterPoint()
     {
         // dont need to do this if theres only one player
-        if (players.Count == 1)
+        if (targets.Count == 1)
         {
-            return players[0].position;
+            return targets[0].position;
         }
 
-        // gets the box encapsulating all players
-        var bounds = new Bounds(players[0].position, Vector3.zero);
-        for (int i = 0; i < players.Count; i++)
+        // gets the box encapsulating all targets
+        var bounds = new Bounds(targets[0].position, Vector3.zero);
+        for (int i = 0; i < targets.Count; i++)
         {
-            bounds.Encapsulate(players[i].position);
+            bounds.Encapsulate(targets[i].position);
         }
 
         // returns the center of this bounding box
