@@ -154,10 +154,10 @@ public class PlayerMovement : MonoBehaviour
                 //Checks if player is starting to jump
                 if (jumpBufferTimer > 0 && onGroundTimer > 0)
                 {
-                    state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
                     MovePlayer();
+                    state = State.JUMPING;
                 }
                 //Checks if player has started running
                 else if (horizontalInput != 0)
@@ -275,6 +275,7 @@ public class PlayerMovement : MonoBehaviour
                     rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                     rb.gravityScale = 1f;
                     rb.AddForce(new Vector2(horizontalWallThrow * (facing * -1), verticalWallThrow) * acceleration, ForceMode2D.Impulse);
+                    canGrab = false;
                     state = State.JUMPING;
                 }
                 break;
@@ -361,7 +362,11 @@ public class PlayerMovement : MonoBehaviour
     {
         //checks if there are any groundLayer colliders below the player
         RaycastHit2D raycastHitGround = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.down, 0.05f, groundLayer);
-        return raycastHitGround.collider != null;
+        if (raycastHitGround.collider != null && raycastHitGround.collider.isTrigger == false)
+        {
+            return true;
+        }
+        return false;
     }
 
     private bool OnlyOnGround()
@@ -375,15 +380,21 @@ public class PlayerMovement : MonoBehaviour
     // if the other player is inside the grab hitbox
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0)
+        if(col.gameObject.tag == "Player")
         {
-            canGrab = true;
+            if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0)
+            {
+                canGrab = true;
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D col)
     {
-        canGrab = false;
+        if(col.gameObject.tag == "Player")
+        {
+            canGrab = false;
+        }
     }
 
     // checks if player hit wall on the right
@@ -399,25 +410,4 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D raycastHitWall = Physics2D.BoxCast(hitbox.bounds.center, hitbox.bounds.size, 0, Vector2.left, 0.08f, groundLayer);
         return raycastHitWall.collider != null;
     }
-
-/*
-    // check when thrown player hits a wall
-    private void OnCollisionEnter2d(Collider2D col)
-    {
-        if(state == State.BEINGTHROWN)
-        {
-            // check if this is the first thing they hit
-            if(wallHit)
-            {
-                return;
-            }
-            else
-            {
-                wallHit = true;
-            }
-            // stick the player
-            rb.isKinematic = true;
-        }
-    }
-*/
 }
