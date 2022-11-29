@@ -1022,8 +1022,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  horizontalWallThrow: 0
-  verticalWallThrow: 0
+  horizontalWallThrow: 0.1
+  verticalWallThrow: 0.7
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -1033,8 +1033,8 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
-  grabbingPlayerJumpMultiplier: 2
-  horizontalThrowMultiplier: 0.5
+  grabbingPlayerJumpMultiplier: 2.5
+  horizontalThrowMultiplier: 0.8
   verticalThrowMultiplier: 0.5
   grabCD: 1
   controlsBackCD: 1
@@ -7217,8 +7217,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  horizontalWallThrow: 0
-  verticalWallThrow: 0
+  horizontalWallThrow: 0.1
+  verticalWallThrow: 0.7
   maxSpeed: 7
   acceleration: 40
   groundDrag: 13
@@ -7228,8 +7228,8 @@ MonoBehaviour:
   lowJumpMultiplier: 6
   jumpBuffer: 0.15
   onGroundBuffer: 0.08
-  grabbingPlayerJumpMultiplier: 2
-  horizontalThrowMultiplier: 0.5
+  grabbingPlayerJumpMultiplier: 2.5
+  horizontalThrowMultiplier: 0.8
   verticalThrowMultiplier: 0.5
   grabCD: 1
   controlsBackCD: 1
