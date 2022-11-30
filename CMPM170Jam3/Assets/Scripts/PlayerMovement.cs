@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
         STUCK
     }
     public State state;
+    public State holdingState;
 
     // constants used for setting the facing of the player
     // impacts the horizontal throw direction of the grabbed player
@@ -64,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GameObject otherPlayer;
     [SerializeField] private PlayerMovement otherPlayerScript;
+    [SerializeField] private Animator anim;
 
     [Header("Input")]
     public InputAction playerLeftRight;
@@ -143,6 +145,19 @@ public class PlayerMovement : MonoBehaviour
         {
             controlsBackCDTimer -= Time.deltaTime;
         }
+
+        //chanings which way sprite is facing based on input (doesnt change when player is stuck to a wall or being thrown)
+        if (state != State.BEINGTHROWN && state != State.STUCK)
+        {
+            if (horizontalInput < -0.01f)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (horizontalInput > 0.01f)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -158,12 +173,14 @@ public class PlayerMovement : MonoBehaviour
                     Jump();
                     MovePlayer();
                     state = State.JUMPING;
+                    anim.SetTrigger("Jumping");
                 }
                 //Checks if player has started running
                 else if (horizontalInput != 0)
                 {
                     MovePlayer();
                     state = State.RUNNING;
+                    anim.SetTrigger("Walking");
                 }
                 // grabbing
                 else if(grabInput != 0 && canGrab)
@@ -189,11 +206,13 @@ public class PlayerMovement : MonoBehaviour
                     state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
+                    anim.SetTrigger("Jumping");
                 }
                 //Checks if player has stopped moving
                 else if (horizontalInput == 0)
                 {
                     state = State.IDLE;
+                    anim.SetTrigger("Idle");
                 }
                 else if(grabInput != 0 && canGrab)
                 {
@@ -213,10 +232,12 @@ public class PlayerMovement : MonoBehaviour
                     if (horizontalInput == 0)
                     {
                         state = State.IDLE;
+                        anim.SetTrigger("Idle");
                     }
                     else
                     {
                         state = State.RUNNING;
+                        anim.SetTrigger("Walking");
                     }
                 }
                 break;
@@ -238,6 +259,7 @@ public class PlayerMovement : MonoBehaviour
                     state = State.IDLE; // could have used a THROWING state but would pretty much accomplish the same thing as IDLE
                     grabCDTimer = grabCD;
                     otherPlayerScript.state = State.BEINGTHROWN;
+                    otherPlayerScript.anim.SetTrigger("Thrown");
                     otherPlayerScript.controlsBackCDTimer = controlsBackCD;
                     canGrab = false;
                     otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
@@ -256,11 +278,13 @@ public class PlayerMovement : MonoBehaviour
                     rb.velocity = Vector2.zero;
                     rb.gravityScale = 0f;
                     state = State.STUCK;
+                    anim.SetTrigger("WallStuck");
                 }
                 // if they hit the ground, return player to idle state
                 else if(controlsBackCDTimer <= 0 || OnlyOnGround())
                 {
                     state = State.IDLE;
+                    anim.SetTrigger("Idle");
                 }
                 break;
             case State.STUCK:
@@ -277,6 +301,7 @@ public class PlayerMovement : MonoBehaviour
                     rb.AddForce(new Vector2(horizontalWallThrow * (facing * -1), verticalWallThrow) * acceleration, ForceMode2D.Impulse);
                     canGrab = false;
                     state = State.JUMPING;
+                    anim.SetTrigger("Jumping");
                 }
                 break;
         }
