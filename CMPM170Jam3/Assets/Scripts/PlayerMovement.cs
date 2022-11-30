@@ -389,6 +389,7 @@ public class PlayerMovement : MonoBehaviour
     // if the other player is inside the grab hitbox
     private void OnTriggerEnter2D(Collider2D col)
     {
+        runRaycast = true;
         if(col.gameObject.tag == "Player")
         {
             if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0 && otherPlayerScript.state != State.STUCK)
@@ -398,6 +399,9 @@ public class PlayerMovement : MonoBehaviour
         }
         if(col.gameObject.tag == "Platform" && state == State.BEINGTHROWN){
             this.gameObject.transform.parent = col.transform;
+        }
+        if(col.gameObject.tag == "Box" && state == State.BEINGTHROWN){
+            state = State.IDLE;
         }
     }
 
