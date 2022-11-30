@@ -319,22 +319,12 @@ public class PlayerMovement : MonoBehaviour
             prevGrabButtonState = grabInput;
         }
 
-        //Animation/SFX state machine for when player is holding/being held
+        //Animation/SFX state machine for when player is holding/being held, jump transitions are handeled in jump
         switch (holdingState)
         {
             case State.IDLE:
-                //Checks if player is starting to jump
-                if (jumpBufferTimer > 0 && onGroundTimer > 0)
-                {
-                    holdingState = State.JUMPING;
-                    if (state == State.HOLDING)
-                    {
-                        anim.SetTrigger("HoldingJump");
-                        otherPlayerScript.anim.SetTrigger("HeldJump");
-                    }
-                }
                 //Checks if player has started running
-                else if (horizontalInput != 0)
+                if (horizontalInput != 0)
                 {
                     holdingState = State.RUNNING;
                     if (state == State.HOLDING)
@@ -346,18 +336,8 @@ public class PlayerMovement : MonoBehaviour
                 break;
 
             case State.RUNNING:
-                //Checks if player is starting to jump
-                if (jumpBufferTimer > 0 && onGroundTimer > 0)
-                {
-                    holdingState = State.JUMPING;
-                    if (state == State.HOLDING)
-                    {
-                        anim.SetTrigger("HoldingJump");
-                        otherPlayerScript.anim.SetTrigger("HeldJump");
-                    }
-                }
                 //Checks if player has stopped moving
-                else if (horizontalInput == 0)
+                if (horizontalInput == 0)
                 {
                     holdingState = State.IDLE;
                     if (state == State.HOLDING)
@@ -413,6 +393,14 @@ public class PlayerMovement : MonoBehaviour
         //Applies upward force to the player
         rb.drag = airDrag;
         rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+
+        //For animation triggers when holding/being held
+        holdingState = State.JUMPING;
+        if (state == State.HOLDING)
+        {
+            anim.SetTrigger("HoldingJump");
+            otherPlayerScript.anim.SetTrigger("HeldJump");
+        }
     }
 
     private void AdjustFallSpeed()
