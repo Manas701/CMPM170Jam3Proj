@@ -396,6 +396,12 @@ public class PlayerMovement : MonoBehaviour
                 canGrab = true;
             }
         }
+        if(col.gameObject.tag == "Platform" && state == State.BEINGTHROWN){
+            this.gameObject.transform.parent = col.transform;
+        }
+        if(col.gameObject.tag == "Box" && state == State.BEINGTHROWN){
+            state = State.IDLE;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D col)
@@ -403,6 +409,9 @@ public class PlayerMovement : MonoBehaviour
         if(col.gameObject.tag == "Player")
         {
             canGrab = false;
+        }
+        if(col.gameObject.tag == "Platform" && state == State.JUMPING){
+            this.gameObject.transform.parent = null;
         }
     }
 
