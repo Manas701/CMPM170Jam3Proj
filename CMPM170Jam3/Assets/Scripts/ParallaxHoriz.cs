@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Parallax : MonoBehaviour
+public class ParallaxHoriz : MonoBehaviour
 {
     private float length;
     private float startPos;
@@ -19,7 +19,7 @@ public class Parallax : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        float dist = (cam.transform.position.x * parallaxEffect);
+        float dist = ((cam.transform.position.x - 9) * parallaxEffect);
 
         transform.position = new Vector3(startPos + dist, transform.position.y, transform.position.z);
     }
