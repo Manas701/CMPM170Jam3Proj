@@ -147,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //chanings which way sprite is facing based on input (doesnt change when player is stuck to a wall or being thrown)
-        if (state != State.BEINGTHROWN && state != State.STUCK)
+        if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
         {
             if (horizontalInput < -0.01f)
             {
@@ -157,6 +157,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 transform.localScale = new Vector3(-1, 1, 1);
             }
+        }
+        //sets players facing direction based on other player when being held
+        else if (state == State.BEINGHELD)
+        {
+            transform.localScale = new Vector3(facing, 1, 1);
         }
     }
 
@@ -218,6 +223,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     state = State.HOLDING;
                     otherPlayerScript.state = State.BEINGHELD;
+                    otherPlayerScript.anim.SetTrigger("HeldIdle");
                     otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 0f;
                     jumpPower *= grabbingPlayerJumpMultiplier;
                 }
@@ -244,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
             case State.HOLDING:
                 MovePlayer();
                 // set the player who is being grabbed to just float above the grabbing player's head
-                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + 1.03f);
+                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 18));
                 // also update the other player's facing direction to match the grabbing player's facing direction
                 // so if grabbing player faces right the grabbed player also faces right
                 otherPlayerScript.facing = facing;
@@ -312,6 +318,83 @@ public class PlayerMovement : MonoBehaviour
         {
             prevGrabButtonState = grabInput;
         }
+
+        //Animation/SFX state machine for when player is holding/being held
+        switch (holdingState)
+        {
+            case State.IDLE:
+                //Checks if player is starting to jump
+                if (jumpBufferTimer > 0 && onGroundTimer > 0)
+                {
+                    holdingState = State.JUMPING;
+                    if (state == State.HOLDING)
+                    {
+                        anim.SetTrigger("HoldingJump");
+                        otherPlayerScript.anim.SetTrigger("HeldJump");
+                    }
+                }
+                //Checks if player has started running
+                else if (horizontalInput != 0)
+                {
+                    holdingState = State.RUNNING;
+                    if (state == State.HOLDING)
+                    {
+                        anim.SetTrigger("HoldingWalk");
+                        otherPlayerScript.anim.SetTrigger("HeldWalk");
+                    }
+                }
+                break;
+
+            case State.RUNNING:
+                //Checks if player is starting to jump
+                if (jumpBufferTimer > 0 && onGroundTimer > 0)
+                {
+                    holdingState = State.JUMPING;
+                    if (state == State.HOLDING)
+                    {
+                        anim.SetTrigger("HoldingJump");
+                        otherPlayerScript.anim.SetTrigger("HeldJump");
+                    }
+                }
+                //Checks if player has stopped moving
+                else if (horizontalInput == 0)
+                {
+                    holdingState = State.IDLE;
+                    if (state == State.HOLDING)
+                    {
+                        anim.SetTrigger("HoldingIdle");
+                        otherPlayerScript.anim.SetTrigger("HeldIdle");
+                    }
+                }
+                break;
+
+            case State.JUMPING:
+                MovePlayer();
+                //Checks if player is back on the ground
+                if (OnGround())
+                {
+                    //Transitions to either idle or running depending on if player is moving
+                    if (horizontalInput == 0)
+                    {
+                        holdingState = State.IDLE;
+                        if (state == State.HOLDING)
+                        {
+                            anim.SetTrigger("Idle");
+                            otherPlayerScript.anim.SetTrigger("HeldIdle");
+                        }
+                    }
+                    else
+                    {
+                        holdingState = State.RUNNING;
+                        if (state == State.HOLDING)
+                        {
+                            anim.SetTrigger("Walking");
+                            otherPlayerScript.anim.SetTrigger("HeldWalk");
+                        }
+                    }
+                }
+                break;
+        }
     }
 
     private void MovePlayer()
@@ -334,6 +417,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void AdjustFallSpeed()
     {
+        if (state == State.BEINGHELD)
+        {
+            rb.gravityScale = 0;
+        }
         //makes player fall faster that way jump is less floaty
         if (rb.velocity.y < 0)
         {
