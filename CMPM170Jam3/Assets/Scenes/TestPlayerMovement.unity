@@ -1049,6 +1049,7 @@ MonoBehaviour:
   rb: {fileID: 205541805}
   otherPlayer: {fileID: 2003646021}
   otherPlayerScript: {fileID: 2003646024}
+  anim: {fileID: 1194462798}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -1412,8 +1413,9 @@ GameObject:
   m_Component:
   - component: {fileID: 458333457}
   - component: {fileID: 458333458}
+  - component: {fileID: 458333459}
   m_Layer: 8
-  m_Name: Square
+  m_Name: Sprite2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1454,7 +1456,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 984e98d0de2baef4fb5b9d2c561ecb84, type: 2}
+  - {fileID: 2100000, guid: d1247ce8c5c946440a78863d18d2025d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1486,6 +1488,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &458333459
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458333456}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f07ab8276a788fc4ba9bea14d5172898, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &490898498
 GameObject:
   m_ObjectHideFlags: 0
@@ -3217,9 +3239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df39795ed374b4b0391b0e5e8d62778e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players:
-  - {fileID: 205541807}
-  - {fileID: 2003646025}
+  targets: []
   offset: {x: 0, y: 0, z: -10}
   smoothTime: 0.25
   minZoom: 40
@@ -5440,8 +5460,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1194462796}
   - component: {fileID: 1194462797}
+  - component: {fileID: 1194462798}
   m_Layer: 7
-  m_Name: Square
+  m_Name: Sprite1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5456,7 +5477,7 @@ Transform:
   m_GameObject: {fileID: 1194462795}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.0365414}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.4, y: 3.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 205541807}
@@ -5482,7 +5503,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7c43d23ab93d05241b3d661d1c558e54, type: 2}
+  - {fileID: 2100000, guid: d1247ce8c5c946440a78863d18d2025d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5503,7 +5524,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 76209857, guid: 517f7c088f1e2ea4385f5517b4316a26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5514,6 +5535,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1194462798
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194462795}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6f6907ff65ca4ea40b37c1c6324186d7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1220838934
 GameObject:
   m_ObjectHideFlags: 0
@@ -7459,6 +7500,7 @@ MonoBehaviour:
   rb: {fileID: 2003646023}
   otherPlayer: {fileID: 205541803}
   otherPlayerScript: {fileID: 205541806}
+  anim: {fileID: 458333459}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
