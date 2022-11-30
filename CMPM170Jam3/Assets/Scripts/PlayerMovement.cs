@@ -389,7 +389,6 @@ public class PlayerMovement : MonoBehaviour
     // if the other player is inside the grab hitbox
     private void OnTriggerEnter2D(Collider2D col)
     {
-        runRaycast = true;
         if(col.gameObject.tag == "Player")
         {
             if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0 && otherPlayerScript.state != State.STUCK)
