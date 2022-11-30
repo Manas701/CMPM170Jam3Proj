@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class SceneHandler : MonoBehaviour
 {
     public string nextScene;
+    public bool fakeDoor = false;
     private bool p1Collided = false;
     private bool p2Collided = false;
 
@@ -13,7 +14,12 @@ public class SceneHandler : MonoBehaviour
     void Update()
     {
         if (p1Collided && p2Collided){
-            SceneManager.LoadScene(nextScene);
+            if (!fakeDoor){
+                SceneManager.LoadScene(nextScene);
+            }
+            else{
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
         if (Input.GetKeyDown(KeyCode.P)){
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
