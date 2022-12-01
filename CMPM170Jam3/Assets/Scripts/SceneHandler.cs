@@ -23,7 +23,9 @@ public class SceneHandler : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P)){
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            //Debug.Log("P pressed");
+        }
+        if (Input.GetKeyDown(KeyCode.K) && !fakeDoor){
+            SceneManager.LoadScene(nextScene);
         }
     }
 
