@@ -188,11 +188,10 @@ public class PlayerMovement : MonoBehaviour
                 //Checks if player is starting to jump
                 if (jumpBufferTimer > 0 && onGroundTimer > 0)
                 {
+                    state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
-                    MovePlayer();
-                    state = State.JUMPING;
-                    anim.SetTrigger("Jumping");
+                    MovePlayer();            
                 }
                 //Checks if player has started running
                 else if (horizontalInput != 0)
@@ -225,7 +224,6 @@ public class PlayerMovement : MonoBehaviour
                     state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
-                    anim.SetTrigger("Jumping");
                 }
                 //Checks if player has stopped moving
                 else if (horizontalInput == 0)
@@ -279,6 +277,8 @@ public class PlayerMovement : MonoBehaviour
                 {
                     state = State.RUNHOLDING;
                     MovePlayer();
+                    anim.SetTrigger("HoldingWalk");
+                    otherPlayerScript.anim.SetTrigger("HeldWalk");
                 }
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
@@ -299,6 +299,8 @@ public class PlayerMovement : MonoBehaviour
                 else if (horizontalInput == 0)
                 {
                     state = State.IDLEHOLDING;
+                    anim.SetTrigger("HoldingIdle");
+                    otherPlayerScript.anim.SetTrigger("HeldIdle");
                 }
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
@@ -309,8 +311,20 @@ public class PlayerMovement : MonoBehaviour
                 MovePlayer();
                 otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
                 otherPlayerScript.facing = facing;
-                if(rb.velocity.y < 0.1f && OnGround()){
-                    state = horizontalInput != 0 ? State.RUNHOLDING : State.IDLEHOLDING;
+                if(rb.velocity.y < 0.1f && OnGround())
+                {
+                    if (horizontalInput == 0)
+                    {
+                        state = State.IDLEHOLDING;
+                        anim.SetTrigger("HoldingIdle");
+                        otherPlayerScript.anim.SetTrigger("HeldIdle");
+                    }
+                    else
+                    {
+                        state = State.RUNHOLDING;
+                        anim.SetTrigger("HoldingWalk");
+                        otherPlayerScript.anim.SetTrigger("HeldWalk");
+                    }
                 }
                 if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
@@ -370,8 +384,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         */
+        
 
-
+        /*
         //Animation/SFX state machine for when player is holding/being held, jump transitions are handeled in jump
         switch (holdingState)
         {
@@ -428,6 +443,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 break;
         }
+        */
     }
 
     private void MovePlayer()
@@ -454,6 +470,10 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetTrigger("HoldingJump");
             otherPlayerScript.anim.SetTrigger("HeldJump");
+        } 
+        else
+        {
+            anim.SetTrigger("Jumping");
         }
     }
 
@@ -537,6 +557,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ThrowPlayer(){
         state = State.IDLE;
+        anim.SetTrigger("Idle");
         grabCDTimer = grabCD;
         otherPlayerScript.state = State.BEINGTHROWN;
         otherPlayerScript.anim.SetTrigger("Thrown");
