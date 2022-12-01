@@ -10,7 +10,9 @@ public class PlayerMovement : MonoBehaviour
         IDLE,
         RUNNING,
         JUMPING,
-        HOLDING,
+        IDLEHOLDING,
+        RUNHOLDING,
+        JUMPHOLDING,
         BEINGHELD,
         BEINGTHROWN,
         STUCK
@@ -112,9 +114,10 @@ public class PlayerMovement : MonoBehaviour
         // grab input
         grabInput = playerGrab.ReadValue<float>();
 
-        //Updates drag and fall speed
-        AdjustDrag();
-        AdjustFallSpeed();
+        if(state != State.BEINGHELD){
+            AdjustDrag();
+            AdjustFallSpeed();
+        }
 
         //jump buffer (stores jump for short amount of time so that player can press jump right before they hit the ground and still jump)
         if (playerJump.WasPressedThisFrame())
@@ -175,6 +178,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {   
+        if(this.name == "Player1"){
+            Debug.Log("STATE " + state);
+        }
         //Player states
         switch (state)
         {
@@ -198,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
                 // grabbing
                 else if(grabInput != 0 && canGrab)
                 {
-                    state = State.HOLDING;
+                    state = State.IDLEHOLDING;
                     otherPlayerScript.state = State.BEINGHELD;
                     // set other player's gravity to zero so that their 
                     // position can be updated without gravity affecting it
@@ -229,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else if(grabInput != 0 && canGrab)
                 {
-                    state = State.HOLDING;
+                    state = State.RUNHOLDING;
                     otherPlayerScript.state = State.BEINGHELD;
                     otherPlayerScript.anim.SetTrigger("HeldIdle");
                     otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 0f;
@@ -255,32 +261,60 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
                 break;
-            case State.HOLDING:
-                MovePlayer();
+            case State.IDLEHOLDING:
                 // set the player who is being grabbed to just float above the grabbing player's head
-                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 18));
+                // DO NOT DIVIDE BY MORE THAN 14 OR THE BOX SINKING BUG WILL GET YOU
+                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 13.5f));
                 // also update the other player's facing direction to match the grabbing player's facing direction
                 // so if grabbing player faces right the grabbed player also faces right
                 otherPlayerScript.facing = facing;
                 if (jumpBufferTimer > 0 && onGroundTimer > 0)
                 {
+                    state = State.JUMPHOLDING;
                     jumpBufferTimer = 0;
                     Jump();
+                    MovePlayer();
                 }
-                // checks if grab button was repressed after initial grabbing then throws other player
+                else if (horizontalInput != 0)
+                {
+                    state = State.RUNHOLDING;
+                    MovePlayer();
+                }
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
-                    state = State.IDLE; // could have used a THROWING state but would pretty much accomplish the same thing as IDLE
-                    grabCDTimer = grabCD;
-                    otherPlayerScript.state = State.BEINGTHROWN;
-                    otherPlayerScript.anim.SetTrigger("Thrown");
-                    otherPlayerScript.controlsBackCDTimer = controlsBackCD;
-                    canGrab = false;
-                    otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
-                    // apply a quick horizontal and vertical force depending on the facing
-                    // of the grabbing player and some multipliers (can also be edited in the editor)
-                    otherPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalThrowMultiplier * facing, verticalThrowMultiplier) * acceleration, ForceMode2D.Impulse);
-                    jumpPower /= grabbingPlayerJumpMultiplier;
+                    ThrowPlayer();
+                }
+                break;
+            case State.RUNHOLDING:
+                MovePlayer();
+                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
+                otherPlayerScript.facing = facing;
+                if (jumpBufferTimer > 0 && onGroundTimer > 0)
+                {
+                    state = State.JUMPHOLDING;
+                    jumpBufferTimer = 0;
+                    Jump();
+                    MovePlayer();
+                }
+                else if (horizontalInput == 0)
+                {
+                    state = State.IDLEHOLDING;
+                }
+                else if(grabInput != 0 && prevGrabButtonState != grabInput)
+                {
+                    ThrowPlayer();
+                }
+                break;
+            case State.JUMPHOLDING:
+                MovePlayer();
+                otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
+                otherPlayerScript.facing = facing;
+                if(rb.velocity.y < 0.1f && OnGround()){
+                    state = horizontalInput != 0 ? State.RUNHOLDING : State.IDLEHOLDING;
+                }
+                if(grabInput != 0 && prevGrabButtonState != grabInput)
+                {
+                    ThrowPlayer();
                 }
                 break;
             case State.BEINGHELD:
@@ -346,7 +380,7 @@ public class PlayerMovement : MonoBehaviour
                 if (horizontalInput != 0)
                 {
                     holdingState = State.RUNNING;
-                    if (state == State.HOLDING)
+                    if (state == State.RUNHOLDING)
                     {
                         anim.SetTrigger("HoldingWalk");
                         otherPlayerScript.anim.SetTrigger("HeldWalk");
@@ -359,7 +393,7 @@ public class PlayerMovement : MonoBehaviour
                 if (horizontalInput == 0)
                 {
                     holdingState = State.IDLE;
-                    if (state == State.HOLDING)
+                    if (state == State.IDLEHOLDING)
                     {
                         anim.SetTrigger("HoldingIdle");
                         otherPlayerScript.anim.SetTrigger("HeldIdle");
@@ -376,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
                     if (horizontalInput == 0)
                     {
                         holdingState = State.IDLE;
-                        if (state == State.HOLDING)
+                        if (state == State.IDLEHOLDING)
                         {
                             anim.SetTrigger("Idle");
                             otherPlayerScript.anim.SetTrigger("HeldIdle");
@@ -385,7 +419,7 @@ public class PlayerMovement : MonoBehaviour
                     else
                     {
                         holdingState = State.RUNNING;
-                        if (state == State.HOLDING)
+                        if (state == State.RUNHOLDING)
                         {
                             anim.SetTrigger("Walking");
                             otherPlayerScript.anim.SetTrigger("HeldWalk");
@@ -416,7 +450,7 @@ public class PlayerMovement : MonoBehaviour
 
         //For animation triggers when holding/being held
         holdingState = State.JUMPING;
-        if (state == State.HOLDING)
+        if (state == State.JUMPHOLDING)
         {
             anim.SetTrigger("HoldingJump");
             otherPlayerScript.anim.SetTrigger("HeldJump");
@@ -425,24 +459,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void AdjustFallSpeed()
     {
-        if (state == State.BEINGHELD)
-        {
-            rb.gravityScale = 0;
-        }
         //makes player fall faster that way jump is less floaty
-        if (rb.velocity.y < 0)
-        {
-            rb.gravityScale = fallMultiplier;
-        }
-        //allows play to do short jumps by increasing gravity when they let go of jump
-        else if (rb.velocity.y > 0 && playerJump.ReadValue<float>() == 0)
-        {
-            rb.gravityScale = lowJumpMultiplier;
-        }
-        //resets player gravity when not jumping
-        else
-        {
+        if(OnGround()){
             rb.gravityScale = 1f;
+        }
+        else{
+            if (rb.velocity.y < -0.1f)
+            {
+                rb.gravityScale = fallMultiplier;
+            }
+            //allows play to do short jumps by increasing gravity when they let go of jump
+            else if (rb.velocity.y > 0.1f && playerJump.ReadValue<float>() == 0)
+            {
+                rb.gravityScale = lowJumpMultiplier;
+            }
         }
     }
 
@@ -505,13 +535,26 @@ public class PlayerMovement : MonoBehaviour
         return raycastHitGround.collider != null;
     }
 
+    private void ThrowPlayer(){
+        state = State.IDLE;
+        grabCDTimer = grabCD;
+        otherPlayerScript.state = State.BEINGTHROWN;
+        otherPlayerScript.anim.SetTrigger("Thrown");
+        otherPlayerScript.controlsBackCDTimer = controlsBackCD;
+        canGrab = false;
+        otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
+        otherPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalThrowMultiplier * facing, verticalThrowMultiplier) * acceleration, ForceMode2D.Impulse);
+        jumpPower /= grabbingPlayerJumpMultiplier;
+    }
+
     // trigger enter and exit functions used for detecting
     // if the other player is inside the grab hitbox
     private void OnTriggerEnter2D(Collider2D col)
     {
         if(col.gameObject.tag == "Player")
         {
-            if((state != State.BEINGHELD || state != State.HOLDING) && grabCDTimer <= 0 && controlsBackCDTimer <= 0 && otherPlayerScript.state != State.STUCK)
+            if((state != State.BEINGHELD || state != State.IDLEHOLDING || state != State.RUNHOLDING || state != State.JUMPHOLDING)
+                      && grabCDTimer <= 0 && controlsBackCDTimer <= 0 && otherPlayerScript.state != State.STUCK)
             {
                 canGrab = true;
             }
