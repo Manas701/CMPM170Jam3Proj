@@ -178,7 +178,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {   
         if(this.name == "Player1"){
-            Debug.Log("STATE " + state);
+            //Debug.Log("STATE " + state);
         }
         //Player states
         switch (state)
@@ -339,6 +339,7 @@ public class PlayerMovement : MonoBehaviour
 
             case State.BEINGTHROWN:
                 // if they hit a wall, stick the player
+                //print("AAAAAAAAAAA " + OnlyOnGround());
                 if (OnWallLeft() || OnWallRight())
                 {
                     rb.velocity = Vector2.zero;
@@ -346,6 +347,7 @@ public class PlayerMovement : MonoBehaviour
                     state = State.STUCK;
                     anim.SetTrigger("WallStuck");
                 }
+        
                 // if they hit the ground, return player to idle state
                 else if(controlsBackCDTimer <= 0 || OnlyOnGround())
                 {
@@ -529,6 +531,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if(col.gameObject.tag == "Box" && state == State.BEINGTHROWN){
             state = State.IDLE;
+            anim.SetTrigger("Idle");
         }
     }
 
