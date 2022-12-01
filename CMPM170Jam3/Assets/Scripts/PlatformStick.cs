@@ -4,21 +4,9 @@ using UnityEngine;
 
 public class PlatformStick : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnCollisionEnter2D(Collision2D other)
     {
-        other.transform.parent = transform;
+        other.transform.parent = transform.parent;
     }
 
     void OnCollisionExit2D(Collision2D other)
