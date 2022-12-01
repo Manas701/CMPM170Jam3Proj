@@ -331,10 +331,9 @@ public class PlayerMovement : MonoBehaviour
         if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
         {
             if (!audioPlayer.isPlaying)
-        {
-            audioPlayer.PlayOneShot(foostepSFX);
-        }
-
+            {
+                audioPlayer.PlayOneShot(foostepSFX);
+            }
         }
         */
 
