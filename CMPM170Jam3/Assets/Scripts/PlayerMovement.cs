@@ -67,6 +67,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovement otherPlayerScript;
     [SerializeField] private Animator anim;
 
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioPlayer;
+    [SerializeField] private AudioClip foostepSFX;
+    [SerializeField] private AudioClip jumpSFX;
+    [SerializeField] private AudioClip throwSFX;
+    [SerializeField] private AudioClip landSFX;
+
     [Header("Input")]
     public InputAction playerLeftRight;
     public InputAction playerJump;
@@ -147,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //chanings which way sprite is facing based on input (doesnt change when player is stuck to a wall or being thrown)
+        //Also plays footstep audio when not being held
         if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
         {
             if (horizontalInput < -0.01f)
@@ -161,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
         //sets players facing direction based on other player when being held
         else if (state == State.BEINGHELD)
         {
-            transform.localScale = new Vector3(facing, 1, 1);
+            transform.localScale = new Vector3(-facing, 1, 1);
         }
     }
 
@@ -319,6 +327,18 @@ public class PlayerMovement : MonoBehaviour
             prevGrabButtonState = grabInput;
         }
 
+        /*
+        if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
+        {
+            if (!audioPlayer.isPlaying)
+        {
+            audioPlayer.PlayOneShot(foostepSFX);
+        }
+
+        }
+        */
+
+
         //Animation/SFX state machine for when player is holding/being held, jump transitions are handeled in jump
         switch (holdingState)
         {
@@ -393,6 +413,7 @@ public class PlayerMovement : MonoBehaviour
         //Applies upward force to the player
         rb.drag = airDrag;
         rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+        audioPlayer.PlayOneShot(jumpSFX);
 
         //For animation triggers when holding/being held
         holdingState = State.JUMPING;
