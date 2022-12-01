@@ -339,7 +339,6 @@ public class PlayerMovement : MonoBehaviour
 
             case State.BEINGTHROWN:
                 // if they hit a wall, stick the player
-                //print("AAAAAAAAAAA " + OnlyOnGround());
                 if (OnWallLeft() || OnWallRight())
                 {
                     rb.velocity = Vector2.zero;
