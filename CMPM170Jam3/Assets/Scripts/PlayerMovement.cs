@@ -18,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
         STUCK
     }
     public State state;
-    public State holdingState;
 
     // constants used for setting the facing of the player
     // impacts the horizontal throw direction of the grabbed player
@@ -259,6 +258,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
                 break;
+
             case State.IDLEHOLDING:
                 // set the player who is being grabbed to just float above the grabbing player's head
                 // DO NOT DIVIDE BY MORE THAN 14 OR THE BOX SINKING BUG WILL GET YOU
@@ -285,6 +285,7 @@ public class PlayerMovement : MonoBehaviour
                     ThrowPlayer();
                 }
                 break;
+
             case State.RUNHOLDING:
                 MovePlayer();
                 otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
@@ -307,11 +308,16 @@ public class PlayerMovement : MonoBehaviour
                     ThrowPlayer();
                 }
                 break;
+
             case State.JUMPHOLDING:
                 MovePlayer();
                 otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
                 otherPlayerScript.facing = facing;
-                if(rb.velocity.y < 0.1f && OnGround())
+                if (grabInput != 0 && prevGrabButtonState != grabInput)
+                {
+                    ThrowPlayer();
+                }
+                else if (rb.velocity.y < 0.1f && OnGround())
                 {
                     if (horizontalInput == 0)
                     {
@@ -325,14 +331,12 @@ public class PlayerMovement : MonoBehaviour
                         anim.SetTrigger("HoldingWalk");
                         otherPlayerScript.anim.SetTrigger("HeldWalk");
                     }
-                }
-                if(grabInput != 0 && prevGrabButtonState != grabInput)
-                {
-                    ThrowPlayer();
-                }
+                }              
                 break;
+
             case State.BEINGHELD:
                 break;
+
             case State.BEINGTHROWN:
                 // if they hit a wall, stick the player
                 if (OnWallLeft() || OnWallRight())
@@ -349,6 +353,7 @@ public class PlayerMovement : MonoBehaviour
                     anim.SetTrigger("Idle");
                 }
                 break;
+                
             case State.STUCK:
                 // stick player until they press down
                 //rb.isKinematic = true;
@@ -384,66 +389,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         */
-        
-
-        /*
-        //Animation/SFX state machine for when player is holding/being held, jump transitions are handeled in jump
-        switch (holdingState)
-        {
-            case State.IDLE:
-                //Checks if player has started running
-                if (horizontalInput != 0)
-                {
-                    holdingState = State.RUNNING;
-                    if (state == State.RUNHOLDING)
-                    {
-                        anim.SetTrigger("HoldingWalk");
-                        otherPlayerScript.anim.SetTrigger("HeldWalk");
-                    }
-                }
-                break;
-
-            case State.RUNNING:
-                //Checks if player has stopped moving
-                if (horizontalInput == 0)
-                {
-                    holdingState = State.IDLE;
-                    if (state == State.IDLEHOLDING)
-                    {
-                        anim.SetTrigger("HoldingIdle");
-                        otherPlayerScript.anim.SetTrigger("HeldIdle");
-                    }
-                }
-                break;
-
-            case State.JUMPING:
-                MovePlayer();
-                //Checks if player is back on the ground
-                if (OnGround())
-                {
-                    //Transitions to either idle or running depending on if player is moving
-                    if (horizontalInput == 0)
-                    {
-                        holdingState = State.IDLE;
-                        if (state == State.IDLEHOLDING)
-                        {
-                            anim.SetTrigger("Idle");
-                            otherPlayerScript.anim.SetTrigger("HeldIdle");
-                        }
-                    }
-                    else
-                    {
-                        holdingState = State.RUNNING;
-                        if (state == State.RUNHOLDING)
-                        {
-                            anim.SetTrigger("Walking");
-                            otherPlayerScript.anim.SetTrigger("HeldWalk");
-                        }
-                    }
-                }
-                break;
-        }
-        */
     }
 
     private void MovePlayer()
@@ -465,7 +410,6 @@ public class PlayerMovement : MonoBehaviour
         audioPlayer.PlayOneShot(jumpSFX);
 
         //For animation triggers when holding/being held
-        holdingState = State.JUMPING;
         if (state == State.JUMPHOLDING)
         {
             anim.SetTrigger("HoldingJump");
