@@ -78,6 +78,7 @@ public class MovingPlatform : MonoBehaviour
 
     void OnTriggerStay2D (Collider2D other){
         if (other.CompareTag("Player")){
+            GetComponent<SpriteRenderer>().flipX = true;
             moveTowardsEnd = true;
             if (!GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Contains(platformObject.transform))
             {
@@ -88,6 +89,7 @@ public class MovingPlatform : MonoBehaviour
  
     void OnTriggerExit2D (Collider2D other){
         if (other.CompareTag("Player")){
+            GetComponent<SpriteRenderer>().flipX = false;
             moveTowardsEnd = false;
             if (GameObject.Find("Main Camera").GetComponent<FollowPlayers>().targets.Contains(platformObject.transform))
             {
