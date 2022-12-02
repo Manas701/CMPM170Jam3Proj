@@ -74,11 +74,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioClip jumpSFX;
     [SerializeField] private AudioClip throwSFX;
     [SerializeField] private AudioClip landSFX;
+    private bool wasInAir;
 
     [Header("Input")]
     public InputAction playerLeftRight;
     public InputAction playerJump;
     public InputAction playerGrab;
+
+    private void Start()
+    {
+        wasInAir = !OnGround();
+    }
 
     //Below two functions required for input system to work properly
     private void OnEnable()
@@ -133,12 +139,19 @@ public class PlayerMovement : MonoBehaviour
 
         //Stores a buffer of time whenever player is on ground. Jump checks use this timer instead of OnGround() to allow the player
         //to jump for a short amount of time after leaving a platform (coyote time)
+        //Also used for playing player landing noise
         if (OnGround())
         {
             onGroundTimer = onGroundBuffer;
+            if (wasInAir)
+            {
+                audioPlayer.PlayOneShot(landSFX);
+            }
+            wasInAir = false;
         }
         else
         {
+            wasInAir = true;
             if (onGroundTimer >= 0)
             {
                 onGroundTimer -= Time.deltaTime;
@@ -381,15 +394,16 @@ public class PlayerMovement : MonoBehaviour
             prevGrabButtonState = grabInput;
         }
 
-        /*
-        if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
+        
+        if (state == State.RUNNING || state == State.RUNHOLDING)
         {
             if (!audioPlayer.isPlaying)
             {
                 audioPlayer.PlayOneShot(foostepSFX);
             }
         }
-        */
+        
+        
     }
 
     private void MovePlayer()
@@ -511,6 +525,7 @@ public class PlayerMovement : MonoBehaviour
         otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
         otherPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalThrowMultiplier * facing, verticalThrowMultiplier) * acceleration, ForceMode2D.Impulse);
         jumpPower /= grabbingPlayerJumpMultiplier;
+        audioPlayer.PlayOneShot(throwSFX);
     }
 
     // trigger enter and exit functions used for detecting
