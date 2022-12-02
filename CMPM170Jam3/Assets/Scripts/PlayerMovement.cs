@@ -18,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
         STUCK
     }
     public State state;
-    public State holdingState;
 
     // constants used for setting the facing of the player
     // impacts the horizontal throw direction of the grabbed player
@@ -75,11 +74,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioClip jumpSFX;
     [SerializeField] private AudioClip throwSFX;
     [SerializeField] private AudioClip landSFX;
+    private bool wasInAir;
 
     [Header("Input")]
     public InputAction playerLeftRight;
     public InputAction playerJump;
     public InputAction playerGrab;
+
+    private void Start()
+    {
+        wasInAir = !OnGround();
+    }
 
     //Below two functions required for input system to work properly
     private void OnEnable()
@@ -134,12 +139,19 @@ public class PlayerMovement : MonoBehaviour
 
         //Stores a buffer of time whenever player is on ground. Jump checks use this timer instead of OnGround() to allow the player
         //to jump for a short amount of time after leaving a platform (coyote time)
+        //Also used for playing player landing noise
         if (OnGround())
         {
             onGroundTimer = onGroundBuffer;
+            if (wasInAir)
+            {
+                audioPlayer.PlayOneShot(landSFX);
+            }
+            wasInAir = false;
         }
         else
         {
+            wasInAir = true;
             if (onGroundTimer >= 0)
             {
                 onGroundTimer -= Time.deltaTime;
@@ -179,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {   
         if(this.name == "Player1"){
-            Debug.Log("STATE " + state);
+            //Debug.Log("STATE " + state);
         }
         //Player states
         switch (state)
@@ -188,11 +200,10 @@ public class PlayerMovement : MonoBehaviour
                 //Checks if player is starting to jump
                 if (jumpBufferTimer > 0 && onGroundTimer > 0)
                 {
+                    state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
-                    MovePlayer();
-                    state = State.JUMPING;
-                    anim.SetTrigger("Jumping");
+                    MovePlayer();            
                 }
                 //Checks if player has started running
                 else if (horizontalInput != 0)
@@ -225,7 +236,6 @@ public class PlayerMovement : MonoBehaviour
                     state = State.JUMPING;
                     jumpBufferTimer = 0;
                     Jump();
-                    anim.SetTrigger("Jumping");
                 }
                 //Checks if player has stopped moving
                 else if (horizontalInput == 0)
@@ -261,6 +271,7 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
                 break;
+
             case State.IDLEHOLDING:
                 // set the player who is being grabbed to just float above the grabbing player's head
                 // DO NOT DIVIDE BY MORE THAN 14 OR THE BOX SINKING BUG WILL GET YOU
@@ -279,12 +290,15 @@ public class PlayerMovement : MonoBehaviour
                 {
                     state = State.RUNHOLDING;
                     MovePlayer();
+                    anim.SetTrigger("HoldingWalk");
+                    otherPlayerScript.anim.SetTrigger("HeldWalk");
                 }
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
                     ThrowPlayer();
                 }
                 break;
+
             case State.RUNHOLDING:
                 MovePlayer();
                 otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
@@ -299,26 +313,43 @@ public class PlayerMovement : MonoBehaviour
                 else if (horizontalInput == 0)
                 {
                     state = State.IDLEHOLDING;
+                    anim.SetTrigger("HoldingIdle");
+                    otherPlayerScript.anim.SetTrigger("HeldIdle");
                 }
                 else if(grabInput != 0 && prevGrabButtonState != grabInput)
                 {
                     ThrowPlayer();
                 }
                 break;
+
             case State.JUMPHOLDING:
                 MovePlayer();
                 otherPlayer.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + hitbox.size.y + (hitbox.size.y / 14));
                 otherPlayerScript.facing = facing;
-                if(rb.velocity.y < 0.1f && OnGround()){
-                    state = horizontalInput != 0 ? State.RUNHOLDING : State.IDLEHOLDING;
-                }
-                if(grabInput != 0 && prevGrabButtonState != grabInput)
+                if (grabInput != 0 && prevGrabButtonState != grabInput)
                 {
                     ThrowPlayer();
                 }
+                else if (rb.velocity.y < 0.1f && OnGround())
+                {
+                    if (horizontalInput == 0)
+                    {
+                        state = State.IDLEHOLDING;
+                        anim.SetTrigger("HoldingIdle");
+                        otherPlayerScript.anim.SetTrigger("HeldIdle");
+                    }
+                    else
+                    {
+                        state = State.RUNHOLDING;
+                        anim.SetTrigger("HoldingWalk");
+                        otherPlayerScript.anim.SetTrigger("HeldWalk");
+                    }
+                }              
                 break;
+
             case State.BEINGHELD:
                 break;
+
             case State.BEINGTHROWN:
                 // if they hit a wall, stick the player
                 if (OnWallLeft() || OnWallRight())
@@ -328,6 +359,7 @@ public class PlayerMovement : MonoBehaviour
                     state = State.STUCK;
                     anim.SetTrigger("WallStuck");
                 }
+        
                 // if they hit the ground, return player to idle state
                 else if(controlsBackCDTimer <= 0 || OnlyOnGround())
                 {
@@ -335,6 +367,7 @@ public class PlayerMovement : MonoBehaviour
                     anim.SetTrigger("Idle");
                 }
                 break;
+                
             case State.STUCK:
                 // stick player until they press down
                 //rb.isKinematic = true;
@@ -361,73 +394,16 @@ public class PlayerMovement : MonoBehaviour
             prevGrabButtonState = grabInput;
         }
 
-        /*
-        if (state != State.BEINGTHROWN && state != State.STUCK && state != State.BEINGHELD)
+        
+        if (state == State.RUNNING || state == State.RUNHOLDING)
         {
             if (!audioPlayer.isPlaying)
             {
                 audioPlayer.PlayOneShot(foostepSFX);
             }
         }
-        */
-
-
-        //Animation/SFX state machine for when player is holding/being held, jump transitions are handeled in jump
-        switch (holdingState)
-        {
-            case State.IDLE:
-                //Checks if player has started running
-                if (horizontalInput != 0)
-                {
-                    holdingState = State.RUNNING;
-                    if (state == State.RUNHOLDING)
-                    {
-                        anim.SetTrigger("HoldingWalk");
-                        otherPlayerScript.anim.SetTrigger("HeldWalk");
-                    }
-                }
-                break;
-
-            case State.RUNNING:
-                //Checks if player has stopped moving
-                if (horizontalInput == 0)
-                {
-                    holdingState = State.IDLE;
-                    if (state == State.IDLEHOLDING)
-                    {
-                        anim.SetTrigger("HoldingIdle");
-                        otherPlayerScript.anim.SetTrigger("HeldIdle");
-                    }
-                }
-                break;
-
-            case State.JUMPING:
-                MovePlayer();
-                //Checks if player is back on the ground
-                if (OnGround())
-                {
-                    //Transitions to either idle or running depending on if player is moving
-                    if (horizontalInput == 0)
-                    {
-                        holdingState = State.IDLE;
-                        if (state == State.IDLEHOLDING)
-                        {
-                            anim.SetTrigger("Idle");
-                            otherPlayerScript.anim.SetTrigger("HeldIdle");
-                        }
-                    }
-                    else
-                    {
-                        holdingState = State.RUNNING;
-                        if (state == State.RUNHOLDING)
-                        {
-                            anim.SetTrigger("Walking");
-                            otherPlayerScript.anim.SetTrigger("HeldWalk");
-                        }
-                    }
-                }
-                break;
-        }
+        
+        
     }
 
     private void MovePlayer()
@@ -449,11 +425,14 @@ public class PlayerMovement : MonoBehaviour
         audioPlayer.PlayOneShot(jumpSFX);
 
         //For animation triggers when holding/being held
-        holdingState = State.JUMPING;
         if (state == State.JUMPHOLDING)
         {
             anim.SetTrigger("HoldingJump");
             otherPlayerScript.anim.SetTrigger("HeldJump");
+        } 
+        else
+        {
+            anim.SetTrigger("Jumping");
         }
     }
 
@@ -537,6 +516,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ThrowPlayer(){
         state = State.IDLE;
+        anim.SetTrigger("Idle");
         grabCDTimer = grabCD;
         otherPlayerScript.state = State.BEINGTHROWN;
         otherPlayerScript.anim.SetTrigger("Thrown");
@@ -545,6 +525,7 @@ public class PlayerMovement : MonoBehaviour
         otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 1f;
         otherPlayer.GetComponent<Rigidbody2D>().AddForce(new Vector2(horizontalThrowMultiplier * facing, verticalThrowMultiplier) * acceleration, ForceMode2D.Impulse);
         jumpPower /= grabbingPlayerJumpMultiplier;
+        audioPlayer.PlayOneShot(throwSFX);
     }
 
     // trigger enter and exit functions used for detecting
@@ -564,6 +545,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if(col.gameObject.tag == "Box" && state == State.BEINGTHROWN){
             state = State.IDLE;
+            anim.SetTrigger("Idle");
         }
     }
 
