@@ -130805,10 +130805,10 @@ MonoBehaviour:
   otherPlayerScript: {fileID: 205541806}
   anim: {fileID: 458333459}
   audioPlayer: {fileID: 2003646027}
-  foostepSFX: {fileID: 0}
+  foostepSFX: {fileID: 8300000, guid: 65788765b73326246a6895b3a0433bef, type: 3}
   jumpSFX: {fileID: 8300000, guid: b05f1a734b9fdb54ca50d77b306f0cce, type: 3}
-  throwSFX: {fileID: 0}
-  landSFX: {fileID: 0}
+  throwSFX: {fileID: 8300000, guid: 0e5e1f9098177ea4daee2f8599b51283, type: 3}
+  landSFX: {fileID: 8300000, guid: 63817ecde38ec314cbcde252201b03e8, type: 3}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
