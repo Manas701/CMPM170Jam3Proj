@@ -383,6 +383,7 @@ public class PlayerMovement : MonoBehaviour
                     canGrab = false;
                     state = State.JUMPING;
                     anim.SetTrigger("Jumping");
+                    audioPlayer.PlayOneShot(jumpSFX);
                 }
                 break;
         }

@@ -9672,7 +9672,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  holdingState: 0
   horizontalWallThrow: 0.1
   verticalWallThrow: 0.7
   maxSpeed: 7
@@ -9702,10 +9701,10 @@ MonoBehaviour:
   otherPlayerScript: {fileID: 2003646024}
   anim: {fileID: 1194462798}
   audioPlayer: {fileID: 205541809}
-  foostepSFX: {fileID: 0}
+  foostepSFX: {fileID: 8300000, guid: 65788765b73326246a6895b3a0433bef, type: 3}
   jumpSFX: {fileID: 8300000, guid: b05f1a734b9fdb54ca50d77b306f0cce, type: 3}
-  throwSFX: {fileID: 0}
-  landSFX: {fileID: 0}
+  throwSFX: {fileID: 8300000, guid: 0e5e1f9098177ea4daee2f8599b51283, type: 3}
+  landSFX: {fileID: 8300000, guid: 63817ecde38ec314cbcde252201b03e8, type: 3}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
@@ -23179,7 +23178,7 @@ Transform:
   m_GameObject: {fileID: 458333456}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.0365414}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.4, y: 3.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2003646025}
@@ -23205,7 +23204,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 984e98d0de2baef4fb5b9d2c561ecb84, type: 2}
+  - {fileID: 2100000, guid: d1247ce8c5c946440a78863d18d2025d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -23226,7 +23225,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -1750747473, guid: 02bd28c1f58f9224da9b306f6a475b70, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102961,7 +102960,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  holdingState: 0
   horizontalWallThrow: 0.1
   verticalWallThrow: 0.7
   maxSpeed: 7
@@ -102991,10 +102989,10 @@ MonoBehaviour:
   otherPlayerScript: {fileID: 205541806}
   anim: {fileID: 458333459}
   audioPlayer: {fileID: 2003646027}
-  foostepSFX: {fileID: 0}
+  foostepSFX: {fileID: 8300000, guid: 65788765b73326246a6895b3a0433bef, type: 3}
   jumpSFX: {fileID: 8300000, guid: b05f1a734b9fdb54ca50d77b306f0cce, type: 3}
-  throwSFX: {fileID: 0}
-  landSFX: {fileID: 0}
+  throwSFX: {fileID: 8300000, guid: 0e5e1f9098177ea4daee2f8599b51283, type: 3}
+  landSFX: {fileID: 8300000, guid: 63817ecde38ec314cbcde252201b03e8, type: 3}
   playerLeftRight:
     m_Name: Player Left Right
     m_Type: 0
