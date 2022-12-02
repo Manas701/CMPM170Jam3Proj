@@ -217,6 +217,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     state = State.IDLEHOLDING;
                     otherPlayerScript.state = State.BEINGHELD;
+                    otherPlayerScript.anim.SetTrigger("HeldIdle");
                     // set other player's gravity to zero so that their 
                     // position can be updated without gravity affecting it
                     otherPlayer.GetComponent<Rigidbody2D>().gravityScale = 0f;
