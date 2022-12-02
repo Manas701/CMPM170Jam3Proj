@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Platform
   - Box
+  - Music
   layers:
   - Default
   - TransparentFX
